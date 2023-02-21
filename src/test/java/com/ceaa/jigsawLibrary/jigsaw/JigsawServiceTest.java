@@ -1,5 +1,6 @@
 package com.ceaa.jigsawLibrary.jigsaw;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -10,21 +11,26 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class JigsawTest {
+public class JigsawServiceTest {
 
     @Mock JigsawRepository repository;
+    private JigsawService jigsawService;
+
+    @BeforeEach
+    void setUp() {
+        jigsawService = new JigsawService(repository);
+    }
 
     @Test
     void jigsawDoesNotExist() {
         UUID lookedForId = UUID.randomUUID();
 
-        JigsawService jigsawService = new JigsawService(repository);
-        lenient().when(repository.get(lookedForId)).thenThrow(new JigsawNotFoundException(lookedForId));
+        when(repository.get(lookedForId)).thenThrow(new JigsawNotFoundException(lookedForId));
 
-        Exception exception = assertThrows(JigsawNotFoundException.class,
+        assertThrows(JigsawNotFoundException.class,
                 () -> jigsawService.getJigsaw(lookedForId));
     }
 
@@ -37,8 +43,7 @@ public class JigsawTest {
                 .nPieces(1500)
                 .build();
 
-        JigsawService jigsawService = new JigsawService(repository);
-        lenient().when(repository.get(storedJigsaw.getId())).thenReturn(storedJigsaw);
+        when(repository.get(storedJigsaw.getId())).thenReturn(storedJigsaw);
 
         Jigsaw retrievedJigsaw = jigsawService.getJigsaw(storedJigsaw.getId());
 
