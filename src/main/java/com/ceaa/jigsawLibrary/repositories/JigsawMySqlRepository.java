@@ -3,10 +3,13 @@ package com.ceaa.jigsawLibrary.repositories;
 import com.ceaa.jigsawLibrary.jigsaw.Jigsaw;
 import com.ceaa.jigsawLibrary.jigsaw.JigsawNotFoundException;
 import com.ceaa.jigsawLibrary.jigsaw.JigsawRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
+@Service
 public class JigsawMySqlRepository implements JigsawRepository {
 
     private final JigsawMySqlDataSource dataSource;
@@ -17,15 +20,14 @@ public class JigsawMySqlRepository implements JigsawRepository {
 
     @Override
     public Jigsaw get(UUID id) {
-        Optional<JigsawEntity> foundJigsaw = dataSource.findById(id);
-        if (foundJigsaw.isEmpty()) {
-            throw new JigsawNotFoundException(id);
-        }
+        log.info("Searching for Jigsaw with id {} in database", id);
+        JigsawEntity foundJigsaw = dataSource.findById(id)
+                .orElseThrow(() -> new JigsawNotFoundException(id));
         return Jigsaw.builder()
-                .id(foundJigsaw.get().getId())
-                .title(foundJigsaw.get().getTitle())
-                .brand(foundJigsaw.get().getBrand())
-                .nPieces(foundJigsaw.get().getNPieces())
+                .id(foundJigsaw.getId())
+                .title(foundJigsaw.getTitle())
+                .brand(foundJigsaw.getBrand())
+                .nPieces(foundJigsaw.getNPieces())
                 .build();
     }
 }
