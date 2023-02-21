@@ -34,4 +34,9 @@ public class JigsawEntity {
         this.brand = brand;
         this.nPieces = nPieces;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[id: %s, title: %s, brand: %s, nPieces: %d]", id, title, brand, nPieces);
+    }
 }
