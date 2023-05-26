@@ -1,9 +1,9 @@
 package com.ceaa.jigsawLibrary.jigsaw;
 
-import java.util.UUID;
-
 public class JigsawNotFoundException extends RuntimeException {
-    public JigsawNotFoundException(UUID id) {
-        super(String.format("Jigsaw with Id %s was not found", id));
+    public static final String ERROR_MESSAGE_TEMPLATE = "Jigsaw with Id %s was not found";
+
+    public JigsawNotFoundException(String id) {
+        super(String.format(ERROR_MESSAGE_TEMPLATE, id));
     }
 }

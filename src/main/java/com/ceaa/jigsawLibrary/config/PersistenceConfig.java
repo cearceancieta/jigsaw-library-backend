@@ -1,7 +1,7 @@
 package com.ceaa.jigsawLibrary.config;
 
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-@EnableJpaRepositories(basePackages = "com.ceaa.jigsawLibrary.repositories")
+@EnableMongoRepositories(basePackages = "com.ceaa.jigsawLibrary.repositories.mongodb")
 public class PersistenceConfig {
 }

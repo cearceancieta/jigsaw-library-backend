@@ -1,19 +1,32 @@
 package com.ceaa.jigsawLibrary.jigsaw;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.util.UUID;
+import java.util.Objects;
 
 @Builder
-@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class Jigsaw {
-    private UUID id;
+    private String id;
+    @NotBlank
     private String title;
+    private String subtitle;
+    private String collection;
+    @NotBlank
     private String brand;
-    private int nPieces;
+    @NotBlank
+    private String shape;
+    @NotNull
+    @Positive
+    private Integer nPieces;
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
@@ -21,11 +34,38 @@ public class Jigsaw {
         return title;
     }
 
+    public String getSubtitle() { return subtitle; }
+
+    public String getCollection() { return collection; }
+
     public String getBrand() {
         return brand;
     }
 
-    public int getNPieces() {
+    public String getShape() { return shape; }
+
+    public Integer getNPieces() {
         return nPieces;
+    }
+
+    public void setNPieces(Integer nPieces) { this.nPieces = nPieces; }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Jigsaw other)) return false;
+        return Objects.equals(this.getId(), other.getId())
+                && this.getTitle().equals(other.getTitle())
+                && Objects.equals(this.getSubtitle(), other.getSubtitle())
+                && Objects.equals(this.getCollection(), other.getCollection())
+                && this.getBrand().equals(other.getBrand())
+                && Objects.equals(this.getShape(), other.getShape())
+                && this.getNPieces().equals(other.getNPieces());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Jigsaw: {id: %s, title: %s, subtitle: %s, collection: %s, brand: %s, shape: %s, nPieces: %d}",
+                id, title, subtitle, collection, brand, shape, nPieces);
     }
 }
