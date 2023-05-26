@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JigsawTest {
+class JigsawTest {
 
     private static final Jigsaw jigsaw = Jigsaw.builder()
             .id("id").title("title").subtitle("subtitle").collection("collection")

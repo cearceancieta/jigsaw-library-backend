@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class JigsawIT {
+class JigsawIT {
 
     @Autowired
     private JigsawMongoDataSource dataSource;

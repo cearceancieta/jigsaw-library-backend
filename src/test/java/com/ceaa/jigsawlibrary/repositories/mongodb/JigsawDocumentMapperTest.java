@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JigsawDocumentMapperTest {
+class JigsawDocumentMapperTest {
 
     private JigsawDocumentMapper mapper;
 
