@@ -119,11 +119,11 @@ public class JigsawIT {
         Jigsaw returnedJigsaw = result.getResponseBody();
         assertThat(returnedJigsaw.getId()).isNotBlank();
         assertThat(result.getResponseHeaders().getLocation()).isNotNull();
-        assertThat(result.getResponseHeaders().getLocation().toString()
-                .endsWith("/jigsaws/" + returnedJigsaw.getId())).isTrue();
+        assertThat(result.getResponseHeaders().getLocation().toString())
+                .endsWith("/jigsaws/" + returnedJigsaw.getId());
 
         Optional<JigsawDocument> storedJigsaw = dataSource.findById(returnedJigsaw.getId());
-        assertThat(storedJigsaw.isPresent()).isTrue();
+        assertThat(storedJigsaw).isPresent();
 
         assertThat(storedJigsaw.get().getTitle()).isEqualTo(jigsawToCreate.getTitle());
         assertThat(storedJigsaw.get().getSubtitle()).isEqualTo(jigsawToCreate.getSubtitle());
@@ -148,13 +148,13 @@ public class JigsawIT {
                 .expectBody(ParameterizedTypeReference.forType(HashMap.class))
                 .returnResult();
 
-        assertThat(result.getResponseBody() instanceof Map<?,?>).isTrue();
+        assertThat(result.getResponseBody()).isInstanceOf(Map.class);
         Map<String, String> errorMap = (Map<String, String>) result.getResponseBody();
         Map<String, String> expectedErrorMap = testData.getRight();
-        assertThat(errorMap.size()).isEqualTo(expectedErrorMap.size());
-        errorMap.forEach((field, message) -> {
-            assertThat(expectedErrorMap.containsKey(field)).isTrue();
-            assertThat(expectedErrorMap.get(field)).isEqualTo(message);
+        assertThat(errorMap).hasSameSizeAs(expectedErrorMap);
+        expectedErrorMap.forEach((field, message) -> {
+            assertThat(errorMap).containsKey(field);
+            assertThat(errorMap).containsEntry(field, message);
         });
     }
 

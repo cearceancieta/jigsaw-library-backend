@@ -66,8 +66,8 @@ public class JigsawMongoRepositoryTest {
 
         List<Jigsaw> foundJigsaws = repository.find();
 
-        assertThat(foundJigsaws).isNotNull().isNotEmpty().hasSameSizeAs(storedJigsaws);
-        assertThat(foundJigsaws).containsAll(storedJigsaws.stream()
+        assertThat(foundJigsaws).isNotNull().isNotEmpty().hasSameSizeAs(storedJigsaws)
+                .containsAll(storedJigsaws.stream()
                 .map(mapper::mapFromDocument)
                 .toList());
     }
