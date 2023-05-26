@@ -17,19 +17,20 @@ public class JigsawTest {
 
     @Test
     void testEquals_exactSameObject() {
-        assertTrue(jigsaw.equals(jigsaw));
+        Jigsaw other = jigsaw;
+        assertEquals(jigsaw, other);
     }
 
     @Test
     void testEquals_objectOfDifferentClass() {
         String otherObject = new String();
-        assertFalse(jigsaw.equals(otherObject));
+        assertNotEquals(jigsaw, otherObject);
     }
 
     @ParameterizedTest
     @MethodSource
     void testEquals_jigsawsWithDifferentFields(Jigsaw other) {
-        assertFalse(jigsaw.equals(other));
+        assertNotEquals(jigsaw, other);
     }
 
     @Test
@@ -39,7 +40,7 @@ public class JigsawTest {
                 .collection(jigsaw.getCollection()).brand(jigsaw.getBrand()).shape(jigsaw.getShape())
                 .nPieces(jigsaw.getNPieces())
                 .build();
-        assertTrue(jigsaw.equals(other));
+        assertEquals(jigsaw, other);
     }
 
     @Test
@@ -49,7 +50,7 @@ public class JigsawTest {
         Jigsaw otherBasicJigsaw = Jigsaw.builder()
                 .title(basicJigsaw.getTitle()).brand(basicJigsaw.getBrand()).shape(basicJigsaw.getShape())
                 .nPieces(basicJigsaw.getNPieces()).build();
-        assertTrue(basicJigsaw.equals(otherBasicJigsaw));
+        assertEquals(basicJigsaw, otherBasicJigsaw);
     }
 
     private static Stream<Jigsaw> testEquals_jigsawsWithDifferentFields() {
