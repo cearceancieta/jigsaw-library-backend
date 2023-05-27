@@ -1,5 +1,5 @@
 <h1>Jigsaw Library Project</h1>
-</br>
+<br />
 <p>
 Jigsaw Library starts as a personal project to manage my own Jigsaw Puzzle Library. This is initially created to be used only by me and a handful of friends and family users. Once the MVP is done it will also serve as a place to practice and explore new technologies, tools and libraries.
 </p>
