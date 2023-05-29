@@ -7,5 +7,5 @@ Jigsaw Library starts as a personal project to manage my own Jigsaw Puzzle Libra
 This is the code source for the starting backend project. This will start as a monolith while the application is small. As this project grows it may be necessary to split this monolith into microservices or to create new microservices as clearly independent parts arise.
 </p>
 <p>
-<a href="https://sonarcloud.io/project/overview?id=cearceancieta_jigsaw-library">SonarCloud</a>
+<a href="http://sonarcloud.io/project/overview?id=cearceancieta_jigsaw-library">SonarCloud</a>
 </p>
