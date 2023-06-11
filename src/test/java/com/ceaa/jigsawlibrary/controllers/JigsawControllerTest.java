@@ -10,12 +10,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,12 +36,15 @@ class JigsawControllerTest {
     void getOne_jigsawNotFound() {
         String id = "id";
         JigsawNotFoundException exceptionThrownByService = new JigsawNotFoundException(id);
-        when(service.getJigsaw(id)).thenThrow(exceptionThrownByService);
+        when(service.getJigsaw(id)).thenReturn(Mono.error(exceptionThrownByService));
 
-        Exception exceptionThrownByController = assertThrows(JigsawNotFoundException.class,
-                () -> controller.getOne(id));
+        Mono<ResponseEntity<Jigsaw>> responseMono = controller.getOne(id);
 
-        assertEquals(exceptionThrownByService, exceptionThrownByController);
+        StepVerifier.create(responseMono)
+                .expectErrorSatisfies(throwable -> {
+                    assertEquals(exceptionThrownByService, throwable);
+                })
+                .verify();
     }
 
     @Test
@@ -50,22 +55,25 @@ class JigsawControllerTest {
                 .brand("Jigsaw brand")
                 .nPieces(500)
                 .build();
-        when(service.getJigsaw(storedJigsaw.getId())).thenReturn(storedJigsaw);
+        when(service.getJigsaw(storedJigsaw.getId())).thenReturn(Mono.just(storedJigsaw));
 
-        ResponseEntity<Jigsaw> response = controller.getOne(storedJigsaw.getId());
+        Mono<ResponseEntity<Jigsaw>> responseMono = controller.getOne(storedJigsaw.getId());
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(storedJigsaw);
+        StepVerifier.create(responseMono)
+                .consumeNextWith(response -> {
+                    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                    assertThat(response.getBody()).isEqualTo(storedJigsaw);
+                })
+                .verifyComplete();
     }
 
     @Test
     void getAll_emptyList() {
-        when(service.getJigsaws()).thenReturn(List.of());
+        when(service.getJigsaws()).thenReturn(Flux.empty());
 
-        ResponseEntity<List<Jigsaw>> response = controller.getAll();
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEmpty();
+        StepVerifier.create(controller.getAll())
+                .expectNextCount(0)
+                .verifyComplete();
     }
 
     @Test
@@ -75,12 +83,11 @@ class JigsawControllerTest {
                 Jigsaw.builder().id("id2").title("title2").brand("brand2").nPieces(1000).build(),
                 Jigsaw.builder().id("id3").title("title3").brand("brand3").nPieces(1500).build()
         );
-        when(service.getJigsaws()).thenReturn(storedJigsaws);
+        when(service.getJigsaws()).thenReturn(Flux.fromIterable(storedJigsaws));
 
-        ResponseEntity<List<Jigsaw>> response = controller.getAll();
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotEmpty().containsAll(storedJigsaws);
+        StepVerifier.create(controller.getAll())
+                .expectNextSequence(storedJigsaws)
+                .verifyComplete();
     }
 
     @Test
@@ -91,14 +98,18 @@ class JigsawControllerTest {
         Jigsaw createdJigsaw = Jigsaw.builder().id("createdId")
                 .title(newJigsaw.getTitle()).brand(newJigsaw.getBrand()).shape(newJigsaw.getShape())
                 .nPieces(newJigsaw.getNPieces()).build();
-        when(service.saveJigsaw(newJigsaw)).thenReturn(createdJigsaw);
+        when(service.saveJigsaw(newJigsaw)).thenReturn(Mono.just(createdJigsaw));
 
-        ResponseEntity<Jigsaw> response = controller.save(newJigsaw);
+        StepVerifier.create(controller.save(newJigsaw))
+                .consumeNextWith(response -> {
+                    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+                    assertThat(response.getHeaders().getLocation()).isNotNull();
+                    assertThat(response.getHeaders().getLocation().toString()).endsWith(createdJigsaw.getId());
+                    assertThat(response.getBody()).isNotNull();
+                    assertThat(response.getBody()).isEqualTo(createdJigsaw);
+                })
+                .verifyComplete();
 
         verify(service, times(1)).saveJigsaw(newJigsaw);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getHeaders().getLocation().toString()).endsWith(createdJigsaw.getId());
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody()).isEqualTo(createdJigsaw);
     }
 }

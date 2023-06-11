@@ -1,11 +1,12 @@
 package com.ceaa.jigsawlibrary.jigsaw;
 
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface JigsawRepository {
-    Jigsaw get(String id);
+    Mono<Jigsaw> get(String id);
 
-    List<Jigsaw> find();
+    Flux<Jigsaw> find();
 
-    Jigsaw save(Jigsaw jigsaw);
+    Mono<Jigsaw> save(Jigsaw jigsaw);
 }

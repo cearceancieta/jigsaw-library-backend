@@ -2,16 +2,14 @@ package com.ceaa.jigsawlibrary.controllers;
 
 import com.ceaa.jigsawlibrary.jigsaw.Jigsaw;
 import com.ceaa.jigsawlibrary.jigsaw.JigsawService;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.util.List;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Slf4j
 @RestController
@@ -25,25 +23,25 @@ public class JigsawController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Jigsaw> getOne(@PathVariable String id) {
+    public Mono<ResponseEntity<Jigsaw>> getOne(@PathVariable String id) {
         log.info("Get jigsaw with id {}", id);
-        return ResponseEntity.ok(service.getJigsaw(id));
+        return service.getJigsaw(id).log()
+                .map(ResponseEntity::ok);
     }
 
     @GetMapping
-    public ResponseEntity<List<Jigsaw>> getAll() {
+    @ResponseStatus(HttpStatus.OK)
+    public Flux<Jigsaw> getAll() {
         log.info("Get all jigsaws");
-        List<Jigsaw> jigsaws = service.getJigsaws();
-        return ResponseEntity.ok(jigsaws);
+        return service.getJigsaws().log();
     }
 
     @PostMapping
-    public ResponseEntity<Jigsaw> save(@Valid @RequestBody Jigsaw jigsaw) {
+    public Mono<ResponseEntity<Jigsaw>> save(@RequestBody Jigsaw jigsaw) {
         log.info("Saving " + jigsaw.toString());
-        Jigsaw createdJigsaw = service.saveJigsaw(jigsaw);
-
-        URI location = linkTo(methodOn(JigsawController.class).getOne(createdJigsaw.getId())).toUri();
-        return ResponseEntity.created(location)
-                .body(createdJigsaw);
+        return service.saveJigsaw(jigsaw).log()
+                .map(createdJigsaw -> ResponseEntity
+                        .created(URI.create("/jigsaws/" + createdJigsaw.getId()))
+                        .body(createdJigsaw));
     }
 }

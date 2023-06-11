@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @ControllerAdvice
@@ -15,8 +16,10 @@ public class JigsawNotFoundAdvice {
     @ResponseBody
     @ExceptionHandler(JigsawNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String jigsawNotFoundHandler(JigsawNotFoundException exception) {
+    Mono<Error> jigsawNotFoundHandler(JigsawNotFoundException exception) {
         log.error(exception.getMessage(), exception);
-        return exception.getMessage();
+        return Mono.just(new Error(
+                ErrorCode.RESOURCE_NOT_FOUND,
+                exception.getMessage()));
     }
 }

@@ -12,9 +12,10 @@ class JigsawNotFoundAdviceTest {
         JigsawNotFoundException exception = new JigsawNotFoundException("id");
 
         JigsawNotFoundAdvice advice = new JigsawNotFoundAdvice();
-        String message = advice.jigsawNotFoundHandler(exception);
+        Error error = advice.jigsawNotFoundHandler(exception).block();
 
-        assertThat(message).isEqualTo(exception.getMessage());
+        assertThat(error.code()).isEqualTo(ErrorCode.RESOURCE_NOT_FOUND);
+        assertThat(error.message()).isEqualTo(exception.getMessage());
     }
 
 }

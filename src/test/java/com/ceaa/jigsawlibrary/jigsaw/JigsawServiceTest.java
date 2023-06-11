@@ -5,11 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -28,10 +30,13 @@ class JigsawServiceTest {
     void tryingToGetOneJigsawButJigsawDoesNotExist() {
         String lookedForId = "id";
 
-        when(repository.get(lookedForId)).thenThrow(new JigsawNotFoundException(lookedForId));
+        when(repository.get(lookedForId)).thenReturn(Mono.empty());
 
-        assertThrows(JigsawNotFoundException.class,
-                () -> jigsawService.getJigsaw(lookedForId));
+        Mono<Jigsaw> retrieved = jigsawService.getJigsaw(lookedForId);
+
+        StepVerifier.create(retrieved)
+                .expectError(JigsawNotFoundException.class)
+                .verify();
     }
 
     @Test
@@ -43,19 +48,25 @@ class JigsawServiceTest {
                 .nPieces(1500)
                 .build();
 
-        when(repository.get(storedJigsaw.getId())).thenReturn(storedJigsaw);
+        when(repository.get(storedJigsaw.getId())).thenReturn(Mono.just(storedJigsaw));
 
-        Jigsaw retrievedJigsaw = jigsawService.getJigsaw(storedJigsaw.getId());
+        Mono<Jigsaw> retrievedJigsaw = jigsawService.getJigsaw(storedJigsaw.getId());
 
-        assertNotNull(retrievedJigsaw);
-        assertEquals(storedJigsaw, retrievedJigsaw);
+        StepVerifier.create(retrievedJigsaw)
+                        .consumeNextWith(jigsaw -> {
+                            assertNotNull(jigsaw);
+                            assertEquals(storedJigsaw, jigsaw);
+                        })
+                .verifyComplete();
     }
 
     @Test
     void gettingJigsawListButItsEmpty() {
-        when(repository.find()).thenReturn(List.of());
+        when(repository.find()).thenReturn(Flux.empty());
 
-        assertThat(jigsawService.getJigsaws()).isNotNull().isEmpty();
+        StepVerifier.create(jigsawService.getJigsaws())
+                .expectNextCount(0)
+                .verifyComplete();
     }
 
     @Test
@@ -65,13 +76,11 @@ class JigsawServiceTest {
                 Jigsaw.builder().id("2").title("title2").brand("brand2").nPieces(1000).build(),
                 Jigsaw.builder().id("3").title("title3").brand("brand3").nPieces(1500).build()
         );
-        when(repository.find()).thenReturn(storedJigsaws);
+        when(repository.find()).thenReturn(Flux.fromIterable(storedJigsaws));
 
-        assertThat(jigsawService.getJigsaws())
-                .isNotNull()
-                .isNotEmpty()
-                .hasSameSizeAs(storedJigsaws)
-                .hasSameElementsAs(storedJigsaws);
+        StepVerifier.create(jigsawService.getJigsaws())
+                .expectNextSequence(storedJigsaws)
+                .verifyComplete();
     }
 
     @Test
@@ -80,12 +89,13 @@ class JigsawServiceTest {
         Jigsaw createdJigsaw = Jigsaw.builder().id("newId")
                 .title(newJigsaw.getTitle()).brand(newJigsaw.getBrand()).shape(newJigsaw.getShape())
                 .nPieces(newJigsaw.getNPieces()).build();
-        when(repository.save(newJigsaw)).thenReturn(createdJigsaw);
+        when(repository.save(newJigsaw)).thenReturn(Mono.just(createdJigsaw));
 
-        Jigsaw returnedJigsaw = jigsawService.saveJigsaw(newJigsaw);
+        StepVerifier.create(jigsawService.saveJigsaw(newJigsaw))
+                .expectNext(createdJigsaw)
+                .verifyComplete();
 
         verify(repository, times(1)).save(newJigsaw);
-        assertThat(returnedJigsaw).isEqualTo(createdJigsaw);
     }
 
 }

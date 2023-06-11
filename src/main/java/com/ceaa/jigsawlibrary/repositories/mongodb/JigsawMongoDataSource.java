@@ -1,7 +1,9 @@
 package com.ceaa.jigsawlibrary.repositories.mongodb;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface JigsawMongoDataSource extends MongoRepository<JigsawDocument, String> {
+@Repository
+public interface JigsawMongoDataSource extends ReactiveCrudRepository<JigsawDocument, String> {
 
 }

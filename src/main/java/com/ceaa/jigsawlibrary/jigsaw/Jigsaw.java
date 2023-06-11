@@ -1,8 +1,5 @@
 package com.ceaa.jigsawlibrary.jigsaw;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -14,16 +11,11 @@ import java.util.Objects;
 @AllArgsConstructor
 public class Jigsaw {
     private String id;
-    @NotBlank
     private String title;
     private String subtitle;
     private String collection;
-    @NotBlank
     private String brand;
-    @NotBlank
     private String shape;
-    @NotNull
-    @Positive
     private Integer nPieces;
 
     public String getId() {

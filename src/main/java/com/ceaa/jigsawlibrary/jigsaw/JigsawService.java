@@ -1,6 +1,8 @@
 package com.ceaa.jigsawlibrary.jigsaw;
 
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -13,15 +15,16 @@ public class JigsawService {
         this.repository = repository;
     }
 
-    public Jigsaw getJigsaw(String id) {
-        return repository.get(id);
+    public Mono<Jigsaw> getJigsaw(String id) {
+        return repository.get(id)
+                .switchIfEmpty(Mono.error(new JigsawNotFoundException(id)));
     }
 
-    public List<Jigsaw> getJigsaws() {
+    public Flux<Jigsaw> getJigsaws() {
         return repository.find();
     }
 
-    public Jigsaw saveJigsaw(Jigsaw jigsaw) {
+    public Mono<Jigsaw> saveJigsaw(Jigsaw jigsaw) {
         return repository.save(jigsaw);
     }
 }

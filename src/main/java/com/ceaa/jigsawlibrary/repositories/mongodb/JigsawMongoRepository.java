@@ -1,13 +1,11 @@
 package com.ceaa.jigsawlibrary.repositories.mongodb;
 
 import com.ceaa.jigsawlibrary.jigsaw.Jigsaw;
-import com.ceaa.jigsawlibrary.jigsaw.JigsawNotFoundException;
 import com.ceaa.jigsawlibrary.jigsaw.JigsawRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
@@ -23,26 +21,24 @@ public class JigsawMongoRepository implements JigsawRepository {
     }
 
     @Override
-    public Jigsaw get(String id) {
+    public Mono<Jigsaw> get(String id) {
         log.info("Searching for Jigsaw with id [{}] in database", id);
-        JigsawDocument foundJigsaw = dataSource.findById(id)
-                .orElseThrow(() -> new JigsawNotFoundException(id));
-        return mapper.mapFromDocument(foundJigsaw);
+        return dataSource.findById(id)
+                .map(mapper::mapFromDocument);
     }
 
     @Override
-    public List<Jigsaw> find() {
+    public Flux<Jigsaw> find() {
         log.info("Searching for all Jigsaws in database");
-        return dataSource.findAll().stream()
-                .map(mapper::mapFromDocument)
-                .collect(Collectors.toList());
+        return dataSource.findAll()
+                .map(mapper::mapFromDocument);
     }
 
     @Override
-    public Jigsaw save(Jigsaw jigsaw) {
+    public Mono<Jigsaw> save(Jigsaw jigsaw) {
         log.info("Saving Jigsaw [{}] in database", jigsaw);
-        JigsawDocument document = dataSource.save(mapper.mapToDocument(jigsaw));
-        return mapper.mapFromDocument(document);
+        return dataSource.save(mapper.mapToDocument(jigsaw))
+                .map(mapper::mapFromDocument);
     }
 
 }

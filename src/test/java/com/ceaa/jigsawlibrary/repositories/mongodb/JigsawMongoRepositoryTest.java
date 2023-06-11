@@ -1,7 +1,6 @@
 package com.ceaa.jigsawlibrary.repositories.mongodb;
 
 import com.ceaa.jigsawlibrary.jigsaw.Jigsaw;
-import com.ceaa.jigsawlibrary.jigsaw.JigsawNotFoundException;
 import com.ceaa.jigsawlibrary.jigsaw.JigsawRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,33 +8,39 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class JigsawMongoRepositoryTest {
 
     @Mock
-    JigsawMongoDataSource dataSource;
+    JigsawMongoDataSource reactiveDataSource;
+
     private final JigsawDocumentMapper mapper = new JigsawDocumentMapper();
     private JigsawRepository repository;
 
     @BeforeEach
     void setup() {
-        repository = new JigsawMongoRepository(dataSource, mapper);
+        repository = new JigsawMongoRepository(reactiveDataSource, mapper);
     }
 
     @Test
     void get_searchingForAJigsawThatDoesNotExist() {
         String nonExistingJigsawId = "nonExistingId";
-        when(dataSource.findById(nonExistingJigsawId)).thenReturn(Optional.empty());
+        when(reactiveDataSource.findById(nonExistingJigsawId)).thenReturn(Mono.empty());
 
-        assertThrows(JigsawNotFoundException.class, () -> repository.get(nonExistingJigsawId));
+        Mono<Jigsaw> foundJigsaw = repository.get(nonExistingJigsawId);
+
+        StepVerifier.create(foundJigsaw)
+                .expectNextCount(0)
+                .verifyComplete();
     }
 
     @Test
@@ -43,17 +48,24 @@ class JigsawMongoRepositoryTest {
         JigsawDocument storedJigsaw = JigsawDocument.builder()
                 .id("id").title("title").brand("brand").shape("shape").nPieces(1000)
                 .build();
-        when(dataSource.findById(storedJigsaw.getId())).thenReturn(Optional.of(storedJigsaw));
+        when(reactiveDataSource.findById(storedJigsaw.getId())).thenReturn(Mono.just(storedJigsaw));
 
-        Jigsaw foundJigsaw = repository.get(storedJigsaw.getId());
+        Mono<Jigsaw> foundJigsaw = repository.get(storedJigsaw.getId());
 
-        assertThat(foundJigsaw).isEqualTo(mapper.mapFromDocument(storedJigsaw));
+        StepVerifier.create(foundJigsaw)
+                .expectNext(mapper.mapFromDocument(storedJigsaw))
+                .verifyComplete();
     }
 
     @Test
     void find_searchForJigsawsButNoneAreStored() {
-        when(dataSource.findAll()).thenReturn(List.of());
-        assertThat(repository.find()).isNotNull().isEmpty();
+        when(reactiveDataSource.findAll()).thenReturn(Flux.empty());
+
+        Flux<Jigsaw> foundJigsaws = repository.find();
+
+        StepVerifier.create(foundJigsaws)
+                .expectNextCount(0)
+                .verifyComplete();
     }
 
     @Test
@@ -62,14 +74,13 @@ class JigsawMongoRepositoryTest {
                 JigsawDocument.builder().title("title1").brand("brand1").shape("shape1").nPieces(500).build(),
                 JigsawDocument.builder().title("title2").brand("brand2").shape("shape2").nPieces(1000).build(),
                 JigsawDocument.builder().title("title3").brand("brand3").shape("shape3").nPieces(1500).build());
-        when(dataSource.findAll()).thenReturn(storedJigsaws);
+        when(reactiveDataSource.findAll()).thenReturn(Flux.fromIterable(storedJigsaws));
 
-        List<Jigsaw> foundJigsaws = repository.find();
+        Flux<Jigsaw> foundJigsaws = repository.find();
 
-        assertThat(foundJigsaws).isNotNull().isNotEmpty().hasSameSizeAs(storedJigsaws)
-                .containsAll(storedJigsaws.stream()
-                .map(mapper::mapFromDocument)
-                .toList());
+        StepVerifier.create(foundJigsaws)
+                .expectNextSequence(mapper.mapFromDocumentList(storedJigsaws))
+                .verifyComplete();
     }
 
     @Test
@@ -80,15 +91,15 @@ class JigsawMongoRepositoryTest {
         JigsawDocument createdJigsaw = JigsawDocument.builder().id("newId")
                 .title(newJigsaw.getTitle()).brand(newJigsaw.getBrand()).shape(newJigsaw.getShape())
                 .nPieces(newJigsaw.getNPieces()).build();
-        when(dataSource.save(any())).thenReturn(createdJigsaw);
+        when(reactiveDataSource.save(any())).thenReturn(Mono.just(createdJigsaw));
 
-        Jigsaw returnedJigsaw = repository.save(newJigsaw);
+        StepVerifier.create(repository.save(newJigsaw))
+                .expectNext(mapper.mapFromDocument(createdJigsaw))
+                .verifyComplete();
 
         ArgumentCaptor<JigsawDocument> captor = ArgumentCaptor.forClass(JigsawDocument.class);
-        verify(dataSource, times(1)).save(captor.capture());
+        verify(reactiveDataSource, times(1)).save(captor.capture());
         assertThat(mapper.mapFromDocument(captor.getValue())).isEqualTo(newJigsaw);
-
-        assertThat(returnedJigsaw).isEqualTo(mapper.mapFromDocument(createdJigsaw));
     }
 
 }
