@@ -2,13 +2,13 @@ package com.ceaa.jigsawlibrary.jigsaw;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.util.Objects;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Jigsaw {
     private String id;
     private String title;
@@ -41,19 +41,6 @@ public class Jigsaw {
     }
 
     public void setNPieces(Integer nPieces) { this.nPieces = nPieces; }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Jigsaw other)) return false;
-        return Objects.equals(this.getId(), other.getId())
-                && this.getTitle().equals(other.getTitle())
-                && Objects.equals(this.getSubtitle(), other.getSubtitle())
-                && Objects.equals(this.getCollection(), other.getCollection())
-                && this.getBrand().equals(other.getBrand())
-                && Objects.equals(this.getShape(), other.getShape())
-                && this.getNPieces().equals(other.getNPieces());
-    }
 
     @Override
     public String toString() {
