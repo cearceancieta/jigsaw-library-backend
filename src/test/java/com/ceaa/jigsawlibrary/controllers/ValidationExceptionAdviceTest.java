@@ -11,7 +11,6 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.support.WebExchangeBindException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,13 +31,18 @@ public class ValidationExceptionAdviceTest {
         when(exception.getBindingResult().getAllErrors()).thenReturn(allErrors);
 
         ValidationExceptionsAdvice advice = new ValidationExceptionsAdvice();
-        HashMap<String, String> errors = advice.requestParameterValidationExceptionsHandler(exception).block();
 
-        assertThat(errors).hasSameSizeAs(allErrors);
+        Error error = advice.requestParameterValidationExceptionsHandler(exception).block();
+
+        assertThat(error).isNotNull();
+        assertThat(error.code()).isEqualTo(ErrorCode.BAD_REQUEST);
+        assertThat(error.message()).isEqualTo(ValidationExceptionsAdvice.ERROR_MESSAGE);
+        assertThat(error.details()).isNotNull();
+        assertThat(error.details()).hasSameSizeAs(allErrors);
         allErrors.forEach(objectError -> {
             FieldError fieldError = (FieldError) objectError;
-            assertThat(errors.containsKey(fieldError.getField())).isTrue();
-            assertThat(errors.get(fieldError.getField())).isEqualTo(fieldError.getDefaultMessage());
+            assertThat(error.details().containsKey(fieldError.getField())).isTrue();
+            assertThat(error.details().get(fieldError.getField())).isEqualTo(fieldError.getDefaultMessage());
         });
     }
 

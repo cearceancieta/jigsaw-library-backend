@@ -2,6 +2,7 @@ package com.ceaa.jigsawlibrary.integrationtests;
 
 import com.ceaa.jigsawlibrary.controllers.Error;
 import com.ceaa.jigsawlibrary.controllers.ErrorCode;
+import com.ceaa.jigsawlibrary.controllers.ValidationExceptionsAdvice;
 import com.ceaa.jigsawlibrary.jigsaw.Jigsaw;
 import com.ceaa.jigsawlibrary.jigsaw.JigsawNotFoundException;
 import com.ceaa.jigsawlibrary.repositories.mongodb.JigsawDocument;
@@ -17,13 +18,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -161,19 +160,21 @@ class JigsawIT {
     @ParameterizedTest
     @MethodSource
     void whenCreatingNewJigsawWithoutAllRequiredFields(ImmutablePair<Jigsaw, Map<String, String>> testData) {
-        EntityExchangeResult<Object> result = client.post().bodyValue(testData.getLeft()).exchange()
+        client.post().bodyValue(testData.getLeft()).exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(ParameterizedTypeReference.forType(HashMap.class))
-                .returnResult();
-
-        assertThat(result.getResponseBody()).isInstanceOf(Map.class);
-        Map<String, String> errorMap = (Map<String, String>) result.getResponseBody();
-        Map<String, String> expectedErrorMap = testData.getRight();
-        assertThat(errorMap).hasSameSizeAs(expectedErrorMap);
-        expectedErrorMap.forEach((field, message) -> {
-            assertThat(errorMap).containsKey(field);
-            assertThat(errorMap).containsEntry(field, message);
-        });
+                .expectBody(Error.class)
+                .consumeWith(result -> {
+                    assertThat(result.getResponseBody()).isNotNull();
+                    assertThat(result.getResponseBody().code()).isEqualTo(ErrorCode.BAD_REQUEST);
+                    assertThat(result.getResponseBody().message()).isEqualTo(ValidationExceptionsAdvice.ERROR_MESSAGE);
+                    Map<String, String> errorMap = result.getResponseBody().details();
+                    Map<String, String> expectedErrorMap = testData.getRight();
+                    assertThat(errorMap).hasSameSizeAs(expectedErrorMap);
+                    expectedErrorMap.forEach((field, message) -> {
+                        assertThat(errorMap).containsKey(field);
+                        assertThat(errorMap).containsEntry(field, message);
+                    });
+                });
     }
 
     private static Stream<ImmutablePair<Jigsaw, Map<String, String>>> whenCreatingNewJigsawWithoutAllRequiredFields() {

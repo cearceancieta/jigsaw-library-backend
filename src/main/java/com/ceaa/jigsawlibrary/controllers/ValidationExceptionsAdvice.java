@@ -15,18 +15,17 @@ import java.util.HashMap;
 @Slf4j
 @ControllerAdvice
 public class ValidationExceptionsAdvice {
-    public static final String ERROR_MESSAGE_TEMPLATE = "Validation failed for request";
+    public static final String ERROR_MESSAGE = "Validation failed for request";
 
     @ResponseBody
     @ExceptionHandler(WebExchangeBindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    Mono<HashMap<String, String>> requestParameterValidationExceptionsHandler(WebExchangeBindException exception) {
+    Mono<Error> requestParameterValidationExceptionsHandler(WebExchangeBindException exception) {
         HashMap<String, String> errors = new HashMap<>();
         exception.getBindingResult().getAllErrors().forEach(error -> {
             errors.put(((FieldError) error).getField(), error.getDefaultMessage());
         });
-        log.error("Validation failed for request parameter on fields: {}",
-                errors, exception);
-        return Mono.just(errors);
+        log.error("Validation failed for request parameter on fields: {}", errors, exception);
+        return Mono.just(new Error(ErrorCode.BAD_REQUEST, ERROR_MESSAGE, errors));
     }
 }
