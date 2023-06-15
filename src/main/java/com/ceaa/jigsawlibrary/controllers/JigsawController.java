@@ -2,6 +2,7 @@ package com.ceaa.jigsawlibrary.controllers;
 
 import com.ceaa.jigsawlibrary.jigsaw.Jigsaw;
 import com.ceaa.jigsawlibrary.jigsaw.JigsawService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +37,8 @@ public class JigsawController {
         return service.getJigsaws().log();
     }
 
-    @PostMapping
-    public Mono<ResponseEntity<Jigsaw>> save(@RequestBody Jigsaw jigsaw) {
+    @PostMapping(consumes = "application/json")
+    public Mono<ResponseEntity<Jigsaw>> save(@Valid @RequestBody Jigsaw jigsaw) {
         log.info("Saving " + jigsaw.toString());
         return service.saveJigsaw(jigsaw).log()
                 .map(createdJigsaw -> ResponseEntity
