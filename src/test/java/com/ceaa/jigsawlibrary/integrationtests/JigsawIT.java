@@ -54,6 +54,23 @@ class JigsawIT {
     }
 
     @Test
+    void whenGettingJigsawWithNonAlphanumericIdShouldReturnBadRequest() {
+        String invalidId = "invalid_id";
+        client.get().uri("/" + invalidId).exchange()
+                .expectStatus().isBadRequest()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(Error.class)
+                .consumeWith(result -> {
+                    assertThat(result.getResponseBody()).isNotNull();
+                    assertThat(result.getResponseBody().code()).isEqualTo(ErrorCode.BAD_REQUEST);
+                    assertThat(result.getResponseBody().message()).isEqualTo(ValidationExceptionsAdvice.ERROR_MESSAGE);
+                    assertThat(result.getResponseBody().details()).isNotNull();
+                    assertThat(result.getResponseBody().details().size()).isEqualTo(1);
+                    assertThat(result.getResponseBody().details()).containsEntry("id", "must be alphanumerical");
+                });
+    }
+
+    @Test
     void whenGettingJigsawThatDoesntExistShouldReturnHttpStatusNotFound() {
         String id = "JigsawID";
         client.get().uri("/" + id).exchange()
@@ -181,7 +198,7 @@ class JigsawIT {
         final String blankFieldMessage = "must not be blank";
         final String nullFieldMessage = "must not be null";
         final String notPositiveFieldMessage = "must be greater than 0";
-        Stream<ImmutablePair<Jigsaw, Map<String, String>>> jigsawStream = Stream.of(
+        return Stream.of(
                 new ImmutablePair<>(Jigsaw.builder().build(),
                         Map.of("title", blankFieldMessage, "brand", blankFieldMessage,
                                 "shape", blankFieldMessage, "nPieces", nullFieldMessage)),
@@ -198,6 +215,5 @@ class JigsawIT {
                 new ImmutablePair<>(Jigsaw.builder().title("title").brand("brand").shape("shape").nPieces(-1).build(),
                         Map.of("nPieces", notPositiveFieldMessage))
         );
-        return jigsawStream;
     }
 }
