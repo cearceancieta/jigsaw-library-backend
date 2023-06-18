@@ -1,6 +1,8 @@
-package com.ceaa.jigsawlibrary.controllers;
+package com.ceaa.jigsawlibrary.jigsaw.controllers;
 
-import com.ceaa.jigsawlibrary.jigsaw.JigsawNotFoundException;
+import com.ceaa.jigsawlibrary.jigsaw.domain.JigsawNotFoundException;
+import com.ceaa.jigsawlibrary.shared.controllers.Error;
+import com.ceaa.jigsawlibrary.shared.controllers.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;

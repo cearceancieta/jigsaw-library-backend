@@ -1,4 +1,4 @@
-package com.ceaa.jigsawlibrary.jigsaw;
+package com.ceaa.jigsawlibrary.jigsaw.domain;
 
 public class JigsawNotFoundException extends RuntimeException {
     public static final String ERROR_MESSAGE_TEMPLATE = "Jigsaw with Id %s was not found";

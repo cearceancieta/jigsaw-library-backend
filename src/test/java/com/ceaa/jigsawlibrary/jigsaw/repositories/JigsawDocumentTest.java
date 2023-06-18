@@ -1,4 +1,4 @@
-package com.ceaa.jigsawlibrary.jigsaw;
+package com.ceaa.jigsawlibrary.jigsaw.repositories;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,17 +8,16 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class JigsawTest {
+class JigsawDocumentTest {
 
-    private static final Jigsaw jigsaw = Jigsaw.builder()
+    private static final JigsawDocument jigsaw = JigsawDocument.builder()
             .id("id").title("title").subtitle("subtitle").collection("collection")
             .brand("brand").shape("shape").nPieces(1000)
             .build();
 
     @Test
     void testEquals_exactSameObject() {
-        Jigsaw other = jigsaw;
-        assertEquals(jigsaw, other);
+        assertEquals(jigsaw, jigsaw);
     }
 
     @Test
@@ -29,13 +28,13 @@ class JigsawTest {
 
     @ParameterizedTest
     @MethodSource
-    void testEquals_jigsawsWithDifferentFields(Jigsaw other) {
+    void testEquals_jigsawsWithDifferentFields(JigsawDocument other) {
         assertNotEquals(jigsaw, other);
     }
 
     @Test
     void testEquals_jigsawWithSameFields() {
-        Jigsaw other = Jigsaw.builder()
+        JigsawDocument other = JigsawDocument.builder()
                 .id(jigsaw.getId()).title(jigsaw.getTitle()).subtitle(jigsaw.getSubtitle())
                 .collection(jigsaw.getCollection()).brand(jigsaw.getBrand()).shape(jigsaw.getShape())
                 .nPieces(jigsaw.getNPieces())
@@ -45,51 +44,52 @@ class JigsawTest {
 
     @Test
     void testEquals_sameJigsawsWithOnlyRequiredFields() {
-        Jigsaw basicJigsaw = Jigsaw.builder()
+        JigsawDocument basicJigsaw = JigsawDocument.builder()
                 .title("title").brand("brand").shape("shape").nPieces(500).build();
-        Jigsaw otherBasicJigsaw = Jigsaw.builder()
+        JigsawDocument otherBasicJigsaw = JigsawDocument.builder()
                 .title(basicJigsaw.getTitle()).brand(basicJigsaw.getBrand()).shape(basicJigsaw.getShape())
                 .nPieces(basicJigsaw.getNPieces()).build();
         assertEquals(basicJigsaw, otherBasicJigsaw);
     }
 
-    private static Stream<Jigsaw> testEquals_jigsawsWithDifferentFields() {
+    private static Stream<JigsawDocument> testEquals_jigsawsWithDifferentFields() {
         return Stream.of(
-                Jigsaw.builder()
+                JigsawDocument.builder()
                         .id("otherID").title(jigsaw.getTitle()).subtitle(jigsaw.getSubtitle())
                         .collection(jigsaw.getCollection()).brand(jigsaw.getBrand()).shape(jigsaw.getShape())
                         .nPieces(jigsaw.getNPieces())
                         .build(),
-                Jigsaw.builder()
+                JigsawDocument.builder()
                         .id(jigsaw.getId()).title("otherTitle").subtitle(jigsaw.getSubtitle())
                         .collection(jigsaw.getCollection()).brand(jigsaw.getBrand()).shape(jigsaw.getShape())
                         .nPieces(jigsaw.getNPieces())
                         .build(),
-                Jigsaw.builder()
+                JigsawDocument.builder()
                         .id(jigsaw.getId()).title(jigsaw.getTitle()).subtitle("otherSubtitle")
                         .collection(jigsaw.getCollection()).brand(jigsaw.getBrand()).shape(jigsaw.getShape())
                         .nPieces(jigsaw.getNPieces())
                         .build(),
-                Jigsaw.builder()
+                JigsawDocument.builder()
                         .id(jigsaw.getId()).title(jigsaw.getTitle()).subtitle(jigsaw.getSubtitle())
                         .collection("otherCollection").brand(jigsaw.getBrand()).shape(jigsaw.getShape())
                         .nPieces(jigsaw.getNPieces())
                         .build(),
-                Jigsaw.builder()
+                JigsawDocument.builder()
                         .id(jigsaw.getId()).title(jigsaw.getTitle()).subtitle(jigsaw.getSubtitle())
                         .collection(jigsaw.getCollection()).brand("otherBrand").shape(jigsaw.getShape())
                         .nPieces(jigsaw.getNPieces())
                         .build(),
-                Jigsaw.builder()
+                JigsawDocument.builder()
                         .id(jigsaw.getId()).title(jigsaw.getTitle()).subtitle(jigsaw.getSubtitle())
                         .collection(jigsaw.getCollection()).brand(jigsaw.getBrand()).shape("otherShape")
                         .nPieces(jigsaw.getNPieces())
                         .build(),
-                Jigsaw.builder()
+                JigsawDocument.builder()
                         .id(jigsaw.getId()).title(jigsaw.getTitle()).subtitle(jigsaw.getSubtitle())
                         .collection(jigsaw.getCollection()).brand(jigsaw.getBrand()).shape(jigsaw.getShape())
                         .nPieces(-1)
                         .build()
         );
     }
+
 }

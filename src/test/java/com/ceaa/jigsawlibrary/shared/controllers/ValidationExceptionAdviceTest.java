@@ -1,4 +1,4 @@
-package com.ceaa.jigsawlibrary.controllers;
+package com.ceaa.jigsawlibrary.shared.controllers;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

@@ -1,7 +1,7 @@
-package com.ceaa.jigsawlibrary.controllers;
+package com.ceaa.jigsawlibrary.jigsaw.controllers;
 
-import com.ceaa.jigsawlibrary.jigsaw.Jigsaw;
-import com.ceaa.jigsawlibrary.jigsaw.JigsawService;
+import com.ceaa.jigsawlibrary.jigsaw.domain.Jigsaw;
+import com.ceaa.jigsawlibrary.jigsaw.domain.JigsawService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class JigsawController {
     }
 
     @PostMapping(consumes = "application/json")
-    public Mono<ResponseEntity<Jigsaw>> save(@Valid @RequestBody Jigsaw jigsaw) {
+    public Mono<ResponseEntity<Jigsaw>> create(@Valid @RequestBody Jigsaw jigsaw) {
         log.info("Saving " + jigsaw.toString());
         return service.saveJigsaw(jigsaw).log()
                 .map(createdJigsaw -> ResponseEntity

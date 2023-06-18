@@ -1,4 +1,4 @@
-package com.ceaa.jigsawlibrary.jigsaw;
+package com.ceaa.jigsawlibrary.jigsaw.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,11 +19,11 @@ import static org.mockito.Mockito.*;
 class JigsawServiceTest {
 
     @Mock JigsawRepository repository;
-    private JigsawService jigsawService;
+    private JigsawServiceImp jigsawService;
 
     @BeforeEach
     void setUp() {
-        jigsawService = new JigsawService(repository);
+        jigsawService = new JigsawServiceImp(repository);
     }
 
     @Test

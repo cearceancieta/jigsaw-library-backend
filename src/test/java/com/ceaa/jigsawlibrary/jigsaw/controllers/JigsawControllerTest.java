@@ -1,8 +1,8 @@
-package com.ceaa.jigsawlibrary.controllers;
+package com.ceaa.jigsawlibrary.jigsaw.controllers;
 
-import com.ceaa.jigsawlibrary.jigsaw.Jigsaw;
-import com.ceaa.jigsawlibrary.jigsaw.JigsawNotFoundException;
-import com.ceaa.jigsawlibrary.jigsaw.JigsawService;
+import com.ceaa.jigsawlibrary.jigsaw.domain.Jigsaw;
+import com.ceaa.jigsawlibrary.jigsaw.domain.JigsawNotFoundException;
+import com.ceaa.jigsawlibrary.jigsaw.domain.JigsawService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -100,7 +100,7 @@ class JigsawControllerTest {
                 .nPieces(newJigsaw.getNPieces()).build();
         when(service.saveJigsaw(newJigsaw)).thenReturn(Mono.just(createdJigsaw));
 
-        StepVerifier.create(controller.save(newJigsaw))
+        StepVerifier.create(controller.create(newJigsaw))
                 .consumeNextWith(response -> {
                     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
                     assertThat(response.getHeaders().getLocation()).isNotNull();

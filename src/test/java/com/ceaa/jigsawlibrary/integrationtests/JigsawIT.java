@@ -1,13 +1,13 @@
 package com.ceaa.jigsawlibrary.integrationtests;
 
-import com.ceaa.jigsawlibrary.controllers.Error;
-import com.ceaa.jigsawlibrary.controllers.ErrorCode;
-import com.ceaa.jigsawlibrary.controllers.ValidationExceptionsAdvice;
-import com.ceaa.jigsawlibrary.jigsaw.Jigsaw;
-import com.ceaa.jigsawlibrary.jigsaw.JigsawNotFoundException;
-import com.ceaa.jigsawlibrary.repositories.mongodb.JigsawDocument;
-import com.ceaa.jigsawlibrary.repositories.mongodb.JigsawDocumentMapper;
-import com.ceaa.jigsawlibrary.repositories.mongodb.JigsawMongoDataSource;
+import com.ceaa.jigsawlibrary.shared.controllers.Error;
+import com.ceaa.jigsawlibrary.shared.controllers.ErrorCode;
+import com.ceaa.jigsawlibrary.shared.controllers.ValidationExceptionsAdvice;
+import com.ceaa.jigsawlibrary.jigsaw.domain.Jigsaw;
+import com.ceaa.jigsawlibrary.jigsaw.domain.JigsawNotFoundException;
+import com.ceaa.jigsawlibrary.jigsaw.repositories.JigsawDocument;
+import com.ceaa.jigsawlibrary.jigsaw.repositories.JigsawDocumentMapper;
+import com.ceaa.jigsawlibrary.jigsaw.repositories.JigsawMongoDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.jupiter.api.AfterEach;

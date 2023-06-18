@@ -1,4 +1,4 @@
-package com.ceaa.jigsawlibrary.controllers;
+package com.ceaa.jigsawlibrary.shared.controllers;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;

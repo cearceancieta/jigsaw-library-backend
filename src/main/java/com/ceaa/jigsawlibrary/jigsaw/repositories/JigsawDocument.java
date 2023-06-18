@@ -1,4 +1,4 @@
-package com.ceaa.jigsawlibrary.repositories.mongodb;
+package com.ceaa.jigsawlibrary.jigsaw.repositories;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

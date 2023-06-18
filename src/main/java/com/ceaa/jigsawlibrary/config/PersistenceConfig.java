@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguratio
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
 @Configuration
-@EnableReactiveMongoRepositories(basePackages = "com.ceaa.jigsawlibrary.repositories.mongodb")
+@EnableReactiveMongoRepositories(basePackages = "com.ceaa.jigsawlibrary.*.repositories")
 public class PersistenceConfig extends AbstractReactiveMongoConfiguration {
 
     @Value("${spring.data.mongodb.database}")

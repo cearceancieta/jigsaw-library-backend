@@ -1,6 +1,6 @@
-package com.ceaa.jigsawlibrary.repositories.mongodb;
+package com.ceaa.jigsawlibrary.jigsaw.repositories;
 
-import com.ceaa.jigsawlibrary.jigsaw.Jigsaw;
+import com.ceaa.jigsawlibrary.jigsaw.domain.Jigsaw;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

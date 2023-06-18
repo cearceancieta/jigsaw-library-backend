@@ -1,27 +1,28 @@
-package com.ceaa.jigsawlibrary.jigsaw;
+package com.ceaa.jigsawlibrary.jigsaw.domain;
 
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Service
-public class JigsawService {
+public class JigsawServiceImp implements JigsawService {
 
     private final JigsawRepository repository;
 
-    public JigsawService(JigsawRepository repository) {
+    public JigsawServiceImp(JigsawRepository repository) {
         this.repository = repository;
     }
 
+    @Override
     public Mono<Jigsaw> getJigsaw(String id) {
         return repository.get(id)
                 .switchIfEmpty(Mono.error(new JigsawNotFoundException(id)));
     }
 
+    @Override
     public Flux<Jigsaw> getJigsaws() {
         return repository.find();
     }
 
+    @Override
     public Mono<Jigsaw> saveJigsaw(Jigsaw jigsaw) {
         return repository.save(jigsaw);
     }

@@ -1,7 +1,7 @@
-package com.ceaa.jigsawlibrary.repositories.mongodb;
+package com.ceaa.jigsawlibrary.jigsaw.repositories;
 
-import com.ceaa.jigsawlibrary.jigsaw.Jigsaw;
-import com.ceaa.jigsawlibrary.jigsaw.JigsawRepository;
+import com.ceaa.jigsawlibrary.jigsaw.domain.Jigsaw;
+import com.ceaa.jigsawlibrary.jigsaw.domain.JigsawRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

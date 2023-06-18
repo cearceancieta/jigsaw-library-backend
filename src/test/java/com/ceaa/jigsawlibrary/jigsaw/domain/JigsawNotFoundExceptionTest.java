@@ -1,4 +1,4 @@
-package com.ceaa.jigsawlibrary.jigsaw;
+package com.ceaa.jigsawlibrary.jigsaw.domain;
 
 import org.junit.jupiter.api.Test;
 
