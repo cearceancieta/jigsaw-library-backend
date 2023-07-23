@@ -21,20 +21,20 @@ import static org.mockito.Mockito.*;
 class JigsawMongoRepositoryTest {
 
     @Mock
-    JigsawMongoDataSource reactiveDataSource;
+    JigsawMongoDataSource dataSource;
 
     private final JigsawDocumentMapper mapper = new JigsawDocumentMapper();
     private JigsawRepository repository;
 
     @BeforeEach
     void setup() {
-        repository = new JigsawMongoRepository(reactiveDataSource, mapper);
+        repository = new JigsawMongoRepository(dataSource, mapper);
     }
 
     @Test
     void get_searchingForAJigsawThatDoesNotExist() {
         String nonExistingJigsawId = "nonExistingId";
-        when(reactiveDataSource.findById(nonExistingJigsawId)).thenReturn(Mono.empty());
+        when(dataSource.findById(nonExistingJigsawId)).thenReturn(Mono.empty());
 
         Mono<Jigsaw> foundJigsaw = repository.get(nonExistingJigsawId);
 
@@ -48,7 +48,7 @@ class JigsawMongoRepositoryTest {
         JigsawDocument storedJigsaw = JigsawDocument.builder()
                 .id("id").title("title").brand("brand").shape("shape").nPieces(1000)
                 .build();
-        when(reactiveDataSource.findById(storedJigsaw.getId())).thenReturn(Mono.just(storedJigsaw));
+        when(dataSource.findById(storedJigsaw.getId())).thenReturn(Mono.just(storedJigsaw));
 
         Mono<Jigsaw> foundJigsaw = repository.get(storedJigsaw.getId());
 
@@ -59,7 +59,7 @@ class JigsawMongoRepositoryTest {
 
     @Test
     void find_searchForJigsawsButNoneAreStored() {
-        when(reactiveDataSource.findAll()).thenReturn(Flux.empty());
+        when(dataSource.findAll()).thenReturn(Flux.empty());
 
         Flux<Jigsaw> foundJigsaws = repository.find();
 
@@ -74,7 +74,7 @@ class JigsawMongoRepositoryTest {
                 JigsawDocument.builder().title("title1").brand("brand1").shape("shape1").nPieces(500).build(),
                 JigsawDocument.builder().title("title2").brand("brand2").shape("shape2").nPieces(1000).build(),
                 JigsawDocument.builder().title("title3").brand("brand3").shape("shape3").nPieces(1500).build());
-        when(reactiveDataSource.findAll()).thenReturn(Flux.fromIterable(storedJigsaws));
+        when(dataSource.findAll()).thenReturn(Flux.fromIterable(storedJigsaws));
 
         Flux<Jigsaw> foundJigsaws = repository.find();
 
@@ -91,14 +91,14 @@ class JigsawMongoRepositoryTest {
         JigsawDocument createdJigsaw = JigsawDocument.builder().id("newId")
                 .title(newJigsaw.getTitle()).brand(newJigsaw.getBrand()).shape(newJigsaw.getShape())
                 .nPieces(newJigsaw.getNPieces()).build();
-        when(reactiveDataSource.save(any())).thenReturn(Mono.just(createdJigsaw));
+        when(dataSource.save(any())).thenReturn(Mono.just(createdJigsaw));
 
         StepVerifier.create(repository.save(newJigsaw))
                 .expectNext(mapper.mapFromDocument(createdJigsaw))
                 .verifyComplete();
 
         ArgumentCaptor<JigsawDocument> captor = ArgumentCaptor.forClass(JigsawDocument.class);
-        verify(reactiveDataSource, times(1)).save(captor.capture());
+        verify(dataSource, times(1)).save(captor.capture());
         assertThat(mapper.mapFromDocument(captor.getValue())).isEqualTo(newJigsaw);
     }
 
