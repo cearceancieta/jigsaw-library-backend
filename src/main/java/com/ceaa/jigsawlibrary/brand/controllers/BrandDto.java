@@ -1,4 +1,4 @@
-package com.ceaa.jigsawlibrary.jigsaw.controllers;
+package com.ceaa.jigsawlibrary.brand.controllers;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

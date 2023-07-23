@@ -2,7 +2,7 @@ package com.ceaa.jigsawlibrary.integrationtests;
 
 import com.ceaa.jigsawlibrary.brand.repositories.BrandDocument;
 import com.ceaa.jigsawlibrary.brand.repositories.BrandMongoDataSource;
-import com.ceaa.jigsawlibrary.jigsaw.controllers.BrandDto;
+import com.ceaa.jigsawlibrary.brand.controllers.BrandDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

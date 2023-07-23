@@ -1,7 +1,6 @@
 package com.ceaa.jigsawlibrary.brand.controllers;
 
 import com.ceaa.jigsawlibrary.brand.domain.BrandService;
-import com.ceaa.jigsawlibrary.jigsaw.controllers.BrandDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;

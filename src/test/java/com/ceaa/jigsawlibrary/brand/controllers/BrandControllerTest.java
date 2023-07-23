@@ -2,7 +2,6 @@ package com.ceaa.jigsawlibrary.brand.controllers;
 
 import com.ceaa.jigsawlibrary.brand.domain.Brand;
 import com.ceaa.jigsawlibrary.brand.domain.BrandService;
-import com.ceaa.jigsawlibrary.jigsaw.controllers.BrandDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
