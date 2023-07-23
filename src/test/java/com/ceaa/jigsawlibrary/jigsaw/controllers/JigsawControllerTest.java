@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Flux;
@@ -15,10 +16,13 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class JigsawControllerTest {
@@ -26,10 +30,12 @@ class JigsawControllerTest {
     @Mock
     private JigsawService service;
     private JigsawController controller;
+    private ModelMapper mapper;
 
     @BeforeEach
     void setUp() {
-        controller = new JigsawController(service);
+        mapper = new ModelMapper();
+        controller = new JigsawController(service, mapper);
     }
 
     @Test
@@ -38,12 +44,11 @@ class JigsawControllerTest {
         JigsawNotFoundException exceptionThrownByService = new JigsawNotFoundException(id);
         when(service.getJigsaw(id)).thenReturn(Mono.error(exceptionThrownByService));
 
-        Mono<ResponseEntity<Jigsaw>> responseMono = controller.getOne(id);
+        Mono<ResponseEntity<JigsawDto>> responseMono = controller.getOne(id);
 
         StepVerifier.create(responseMono)
-                .expectErrorSatisfies(throwable -> {
-                    assertEquals(exceptionThrownByService, throwable);
-                })
+                .expectErrorSatisfies(throwable ->
+                        assertEquals(exceptionThrownByService, throwable))
                 .verify();
     }
 
@@ -57,12 +62,12 @@ class JigsawControllerTest {
                 .build();
         when(service.getJigsaw(storedJigsaw.getId())).thenReturn(Mono.just(storedJigsaw));
 
-        Mono<ResponseEntity<Jigsaw>> responseMono = controller.getOne(storedJigsaw.getId());
+        Mono<ResponseEntity<JigsawDto>> responseMono = controller.getOne(storedJigsaw.getId());
 
         StepVerifier.create(responseMono)
                 .consumeNextWith(response -> {
                     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-                    assertThat(response.getBody()).isEqualTo(storedJigsaw);
+                    assertThat(response.getBody()).isEqualTo(mapper.map(storedJigsaw, JigsawDto.class));
                 })
                 .verifyComplete();
     }
@@ -86,7 +91,9 @@ class JigsawControllerTest {
         when(service.getJigsaws()).thenReturn(Flux.fromIterable(storedJigsaws));
 
         StepVerifier.create(controller.getAll())
-                .expectNextSequence(storedJigsaws)
+                .expectNextSequence(storedJigsaws.stream()
+                        .map(jigsaw -> mapper.map(jigsaw, JigsawDto.class))
+                        .collect(Collectors.toList()))
                 .verifyComplete();
     }
 
@@ -100,13 +107,13 @@ class JigsawControllerTest {
                 .nPieces(newJigsaw.getNPieces()).build();
         when(service.saveJigsaw(newJigsaw)).thenReturn(Mono.just(createdJigsaw));
 
-        StepVerifier.create(controller.create(newJigsaw))
+        StepVerifier.create(controller.create(mapper.map(newJigsaw, SaveJigsawRequestDto.class)))
                 .consumeNextWith(response -> {
                     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
                     assertThat(response.getHeaders().getLocation()).isNotNull();
                     assertThat(response.getHeaders().getLocation().toString()).endsWith(createdJigsaw.getId());
                     assertThat(response.getBody()).isNotNull();
-                    assertThat(response.getBody()).isEqualTo(createdJigsaw);
+                    assertThat(response.getBody()).isEqualTo(mapper.map(createdJigsaw, JigsawDto.class));
                 })
                 .verifyComplete();
 
