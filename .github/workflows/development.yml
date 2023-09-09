@@ -43,4 +43,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: jigsaw-library-backend:1.0
+        tags: 037998138888.dkr.ecr.us-east-1.amazonaws.com/jigsaw-library-backend:1.0
