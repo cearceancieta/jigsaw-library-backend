@@ -1,4 +1,4 @@
-name: Development CI
+name: Development CI/CD
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
         cache: maven
 
     - name: Build
-      run: mvn clean install
+      run: mvn clean package -DskipTests
 
     - name: Analyze
       env:
@@ -27,6 +27,10 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cearceancieta_jigsaw-library -Dsonar.organization=cearceancieta -Dsonar.host.url=https://sonarcloud.io
+
+    - name: Get project version
+      run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
+      id: getVersion
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
@@ -43,4 +47,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.us-east-1.amazonaws.com/jigsaw-library-backend:1.0
+        tags: ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.us-east-1.amazonaws.com/jigsaw-library-backend:${{ steps.getVersion.outputs.version }}
