@@ -1,4 +1,5 @@
 <h1>Jigsaw Library Project</h1>
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=cearceancieta_jigsaw-library&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=cearceancieta_jigsaw-library)
 <br />
 <p>
 Jigsaw Library starts as a personal project to manage my own Jigsaw Puzzle Library. This is initially created to be used only by me and a handful of friends and family users. Once the MVP is done it will also serve as a place to practice and explore new technologies, tools and libraries.
