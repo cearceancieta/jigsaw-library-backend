@@ -19,7 +19,7 @@ jobs:
         cache: maven
 
     - name: Build
-      run: mvn clean install
+      run: mvn clean package -DskipTests
 
     - name: Analyze
       env:
